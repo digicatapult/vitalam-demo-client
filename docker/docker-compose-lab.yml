@@ -13,7 +13,7 @@ networks:
 
 services:
   node-charlie:
-    image: ghcr.io/digicatapult/vitalam-node:v1.0.0
+    image: ghcr.io/digicatapult/vitalam-node:v2.0.0
     container_name: node-charlie
     hostname: node-charlie
     ports:
@@ -53,7 +53,7 @@ services:
     networks: ['ipfs', 'lab']
 
   api-charlie:
-    image: ghcr.io/digicatapult/vitalam-api:v1.0.0
+    image: ghcr.io/digicatapult/vitalam-api:v2.0.1
     container_name: api-charlie
     hostname: api-charlie
     ports:
