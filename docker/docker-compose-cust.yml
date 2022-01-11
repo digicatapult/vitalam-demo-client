@@ -13,9 +13,19 @@ networks:
 
 services:
   node-alice:
-    image: ghcr.io/digicatapult/vitalam-node:v2.0.0
+    image: ghcr.io/digicatapult/vitalam-node:v2.5.1
     container_name: node-alice
-    hostname: node-alice
+    command: /bin/sh -c "
+      ./vitalam-node
+      --base-path /data/
+      --alice
+      --node-key ${NODE_ALICE_KEY}
+      --bootnodes /dns4/node-bob/tcp/30333/p2p/${NODE_BOB_PEERID}
+      --bootnodes /dns4/node-charlie/tcp/30333/p2p/${NODE_CHARLIE_PEERID}
+      --chain local
+      --unsafe-ws-external
+      --unsafe-rpc-external
+      --rpc-cors all"
     ports:
       - 30333:30333
       - 9944:9944
@@ -23,49 +33,34 @@ services:
     volumes:
       - ../data/cust/node:/data
     restart: on-failure
-    command: ./run.sh
-    environment:
-      - IDENTITY=${IDENTITY_ALICE}
-      - RPC=${RPC}
-      - CORS=${CORS}
-      - WS=${WS}
-      - NODEKEY=${NODE_ALICE_KEY}
-      - BOOTNODES=/dns4/node-bob/tcp/30333/p2p/${NODE_BOB_PEERID},/dns4/node-charlie/tcp/30333/p2p/${NODE_CHARLIE_PEERID}
     networks: ['chain', 'cust']
 
   ipfs-alice:
-    image: vitalam-alpine-ipfs:latest
+    image: ghcr.io/digicatapult/vitalam-ipfs:v1.0.0
     container_name: ipfs-alice
-    hostname: ipfs-alice
-    build: { 'context': './', 'dockerfile': 'Dockerfile-ipfs', 'args': { 'VER': 'v0.4.23' } }
     ports:
       - 5001:5001
       - 4001:4001
-      - 8080:8080
-    environment:
-      - PEERID=${IPFS_ALICE_PEERID}
-      - PRIVKEY=${IPFS_ALICE_PRIVKEY}
-      - BOOTNODES=/dns4/ipfs-bob/tcp/4001/ipfs/${IPFS_BOB_PEERID},/dns4/ipfs-charlie/tcp/4001/ipfs/${IPFS_CHARLIE_PEERID}
     volumes:
-      - ../data/cust/ipfs:/data
+      - ../data/cust/ipfs:/ipfs
+    environment:
+      - NODE_HOST=node-alice
     restart: on-failure
-    command: ./run.sh
     networks: ['ipfs', 'cust']
 
   api-alice:
-    image: ghcr.io/digicatapult/vitalam-api:v2.0.1
+    image: ghcr.io/digicatapult/vitalam-api:v2.4.0
     container_name: api-alice
-    hostname: api-alice
     ports:
       - 3001:3001
     environment:
       - PORT=3001
-      - API_HOST=${NODE_ALICE_HOST}
+      - API_HOST=node-alice
       - API_PORT=9944
       - USER_URI=${API_ALICE_WALLET_USER_URI}
-      - IPFS_HOST=${IPFS_ALICE_HOST}
+      - IPFS_HOST=ipfs-alice
       - IPFS_PORT=5001
-      - LOG_LEVEL=debug
+      - LOG_LEVEL=trace
       - AUTH_JWKS_URI=${API_JWKS_URI}
       - AUTH_AUDIENCE=${API_AUTH_AUDIENCE}
       - AUTH_ISSUER=${API_AUTH_ISSUER}
@@ -75,7 +70,6 @@ services:
 
   react-alice:
     container_name: react-alice
-    hostname: react-alice
     build:
       context: '../'
       dockerfile: 'Dockerfile'

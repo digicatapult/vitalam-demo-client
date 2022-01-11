@@ -28,6 +28,20 @@ assert_env() {
 	cat $ENVPATH $COMMONENVPATH > $COMBINEDENVPATH;
 }
 
+
+ipfs_init() {
+	IPFS_PATH=$1;
+	mkdir -p $IPFS_PATH;
+	docker run --mount type=bind,src=$IPFS_PATH,dst=/ipfs --entrypoint='' ghcr.io/digicatapult/vitalam-ipfs:v1.0.0 /bin/sh -c "\
+	set -ex; \
+	ipfs init; \
+	ipfs config Addresses.API /ip4/0.0.0.0/tcp/5001; \
+	ipfs config Datastore.StorageMax 1GB; \
+	ipfs config --json API.HTTPHeaders.Access-Control-Allow-Origin '[\"http://0.0.0.0:5001\", \"http://127.0.0.1:5001\"]'; \
+	ipfs bootstrap rm --all; \
+	"
+}
+
 stop_all() {
 	echo StopAll;
 	[ "$(docker-compose -p $PROJECT -f $CUSTPATH ps -q|wc -l)" -gt 0 ] && docker-compose -p $PROJECT -f $CUSTPATH --env-file $COMBINEDENVPATH down --remove-orphans;
@@ -38,6 +52,10 @@ stop_all() {
 
 init_all() {
 	echo StartAll;
+	ipfs_init $PWD/data/cust/ipfs
+	ipfs_init $PWD/data/am/ipfs
+	ipfs_init $PWD/data/lab/ipfs
+	ipfs_init $PWD/data/am-lab/ipfs
 	docker-compose -p $PROJECT -f $CUSTPATH -f $AMPATH -f $LABPATH -f $AMLABPATH --env-file $COMBINEDENVPATH up -d;
 }
 
@@ -50,6 +68,9 @@ stop_default() {
 
 init_default() {
 	echo StartCust StartAM StartLab;
+	ipfs_init $PWD/data/cust/ipfs
+	ipfs_init $PWD/data/am/ipfs
+	ipfs_init $PWD/data/lab/ipfs
 	docker-compose -p $PROJECT -f $CUSTPATH -f $AMPATH -f $LABPATH --env-file $COMBINEDENVPATH up -d;
 }
 
@@ -60,6 +81,7 @@ stop_cust() {
 
 init_cust() {
 	echo StartCust;
+	ipfs_init $PWD/data/cust/ipfs
 	docker-compose -p $PROJECT -f $CUSTPATH --env-file $COMBINEDENVPATH up -d;
 }
 
@@ -70,6 +92,7 @@ stop_am() {
 
 init_am() {
 	echo StartAM;
+	ipfs_init $PWD/data/am/ipfs
 	docker-compose -p $PROJECT -f $AMPATH --env-file $COMBINEDENVPATH up -d;
 }
 
@@ -80,6 +103,7 @@ stop_lab() {
 
 init_lab() {
 	echo StartLab;
+	ipfs_init $PWD/data/lab/ipfs
 	docker-compose -p $PROJECT -f $LABPATH --env-file $COMBINEDENVPATH up -d;
 }
 
@@ -90,6 +114,7 @@ stop_am_lab() {
 
 init_am_lab() {
 	echo StartAMLab;
+	ipfs_init $PWD/data/am-lab/ipfs
 	docker-compose -p $PROJECT -f $AMLABPATH --env-file $COMBINEDENVPATH up -d;
 }
 
@@ -127,7 +152,7 @@ check_health_ipfs() {
 	if [ "$HEALTHRAW" == "" ]; then
 		echo ErrorConnecting;
 	else
-		if [ $HEALTHRAW != '{"Peers":null}' ]; then
+		if [ "$HEALTHRAW" != '{"Peers":null}' ]; then
 			echo PeersNotNull;
 			return 1;
 		else
@@ -142,11 +167,11 @@ check_health_api() {
 	HOST=$1;
 	PORT=$2;
 	URL=http://${HOST}:${PORT}/health;
-	HEALTHRAW=$(curl -s $URL 2>&1);
-	if [ "$HEALTHRAW" == "" ]; then
+	HEALTHRAW=$(curl -o /dev/null -s -w "%{http_code}" $URL);
+	if [ "$HEALTHRAW" == "000" ]; then
 		echo ErrorConnecting;
 	else
-		if [ $HEALTHRAW == '{"status":"ok"}' ]; then
+		if [ "$HEALTHRAW" == '200' ]; then
 			echo ApiOK;
 			return 1;
 		else

@@ -9,7 +9,7 @@ get_token() {
 	echo GetToken;
 	HOST=$1;
 	PORT=$2;
-	URL=http://${HOST}:${PORT}/auth;
+	URL=http://${HOST}:${PORT}/v2/auth;
 	DATA='{"client_id": "'${REACT_API_AUTH_CLIENT_ID}'", "client_secret": "'${REACT_API_AUTH_CLIENT_SECRET}'"}';
 	TOKEN=$(curl -X POST -H 'content-type: application/json' -d "$DATA" $URL 2>/dev/null | sed "s/{.*\"access_token\":\"\([^\"]*\).*}/\1/g");
 }
@@ -18,7 +18,7 @@ init_data_with_curl() {
 	echo InjectingDataWithCURL;
 	HOST=$1;
 	PORT=$2;
-	URL=http://${HOST}:${PORT}/run-process; # URL=http://localhost:3001/run-process;
+	URL=http://${HOST}:${PORT}/v2/run-process; # URL=http://localhost:3001/v2/run-process;
 	OWNER=$3;
 	vitalamtmp=$4;
 	REQ00='{"inputs":[],"outputs":[{ "owner":"'${OWNER}'","metadataFile":"00.txt"}]}';
@@ -35,9 +35,9 @@ check_data_with_curl() {
 	echo CheckingDataWithCURL;
 	HOST=$1;
 	PORT=$2;
-	URL1=http://${HOST}:${PORT}/item/1;
-	URL2=http://${HOST}:${PORT}/item/2;
-	URL3=http://${HOST}:${PORT}/item/3;
+	URL1=http://${HOST}:${PORT}/v2/item/1;
+	URL2=http://${HOST}:${PORT}/v2/item/2;
+	URL3=http://${HOST}:${PORT}/v2/item/3;
 	H1="Accept: application/json"
 	H2="Authorization: Bearer ${TOKEN}"
 	curl -H "$H1" -H "$H2" $URL1; echo;

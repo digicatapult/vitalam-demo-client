@@ -13,9 +13,19 @@ networks:
 
 services:
   node-bob:
-    image: ghcr.io/digicatapult/vitalam-node:v2.0.0
+    image: ghcr.io/digicatapult/vitalam-node:v2.5.1
     container_name: node-bob
-    hostname: node-bob
+    command: /bin/sh -c "
+      ./vitalam-node
+      --base-path /data/
+      --bob
+      --node-key ${NODE_BOB_KEY}
+      --bootnodes /dns4/node-alice/tcp/30333/p2p/${NODE_ALICE_PEERID}
+      --bootnodes /dns4/node-charlie/tcp/30333/p2p/${NODE_CHARLIE_PEERID}
+      --chain local
+      --unsafe-ws-external
+      --unsafe-rpc-external
+      --rpc-cors all"
     ports:
       - 30334:30333
       - 9945:9944
@@ -23,47 +33,32 @@ services:
     volumes:
       - ../data/am/node:/data
     restart: on-failure
-    command: ./run.sh
-    environment:
-      - IDENTITY=${IDENTITY_BOB}
-      - RPC=${RPC}
-      - CORS=${CORS}
-      - WS=${WS}
-      - NODEKEY=${NODE_BOB_KEY}
-      - BOOTNODES=/dns4/node-alice/tcp/30333/p2p/${NODE_ALICE_PEERID},/dns4/node-charlie/tcp/30333/p2p/${NODE_CHARLIE_PEERID}
     networks: ['chain', 'am']
 
   ipfs-bob:
-    image: vitalam-alpine-ipfs:latest
+    image: ghcr.io/digicatapult/vitalam-ipfs:v1.0.0
     container_name: ipfs-bob
-    hostname: ipfs-bob
-    build: { 'context': './', 'dockerfile': 'Dockerfile-ipfs', 'args': { 'VER': 'v0.4.23' } }
     ports:
       - 5002:5001
       - 4002:4001
-      - 8081:8080
-    environment:
-      - PEERID=${IPFS_BOB_PEERID}
-      - PRIVKEY=${IPFS_BOB_PRIVKEY}
-      - BOOTNODES=/dns4/ipfs-alice/tcp/4001/ipfs/${IPFS_ALICE_PEERID},/dns4/ipfs-charlie/tcp/4001/ipfs/${IPFS_CHARLIE_PEERID}
     volumes:
-      - ../data/am/ipfs:/data
+      - ../data/am/ipfs:/ipfs
+    environment:
+      - NODE_HOST=node-bob
     restart: on-failure
-    command: ./run.sh
     networks: ['ipfs', 'am']
 
   api-bob:
-    image: ghcr.io/digicatapult/vitalam-api:v2.0.1
+    image: ghcr.io/digicatapult/vitalam-api:v2.4.0
     container_name: api-bob
-    hostname: api-bob
     ports:
       - 3002:3001
     environment:
       - PORT=3001
-      - API_HOST=${NODE_BOB_HOST}
+      - API_HOST=node-bob
       - API_PORT=9944
       - USER_URI=${API_BOB_WALLET_USER_URI}
-      - IPFS_HOST=${IPFS_BOB_HOST}
+      - IPFS_HOST=ipfs-bob
       - IPFS_PORT=5001
       - LOG_LEVEL=debug
       - AUTH_JWKS_URI=${API_JWKS_URI}
@@ -75,7 +70,6 @@ services:
 
   react-bob:
     container_name: react-bob
-    hostname: react-bob
     build:
       context: '../'
       dockerfile: 'Dockerfile'

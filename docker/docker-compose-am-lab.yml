@@ -6,10 +6,20 @@ networks:
       driver: default
 
 services:
+
   node-eve:
-    image: ghcr.io/digicatapult/vitalam-node:v2.0.0
+    image: ghcr.io/digicatapult/vitalam-node:v2.5.1
     container_name: node-eve
-    hostname: node-eve
+    command: /bin/sh -c "
+      ./vitalam-node
+      --base-path /data/
+      --eve
+      --node-key ${NODE_EVE_KEY}
+      --bootnodes /dns4/node-bob/tcp/30333/p2p/${NODE_BOB_PEERID}
+      --chain local
+      --unsafe-ws-external
+      --unsafe-rpc-external
+      --rpc-cors all"
     ports:
       - 30336:30333
       - 9947:9944
@@ -17,47 +27,32 @@ services:
     volumes:
       - ../data/am-lab/node:/data
     restart: on-failure
-    command: ./run.sh
-    environment:
-      - IDENTITY=${IDENTITY_EVE}
-      - RPC=${RPC}
-      - CORS=${CORS}
-      - WS=${WS}
-      - NODEKEY=${NODE_EVE_KEY}
-      - BOOTNODES=/dns4/node-bob/tcp/30333/p2p/${NODE_BOB_PEERID}
     networks: ['am']
 
   ipfs-eve:
-    image: vitalam-alpine-ipfs:latest
+    image: ghcr.io/digicatapult/vitalam-ipfs:v1.0.0
     container_name: ipfs-eve
-    hostname: ipfs-eve
-    build: { 'context': './', 'dockerfile': 'Dockerfile-ipfs', 'args': { 'VER': 'v0.4.23' } }
     ports:
       - 5004:5001
       - 4004:4001
-      - 8083:8080
-    environment:
-      - PEERID=${IPFS_EVE_PEERID}
-      - PRIVKEY=${IPFS_EVE_PRIVKEY}
-      - BOOTNODES=/dns4/ipfs-bob/tcp/4001/ipfs/${IPFS_BOB_PEERID}
     volumes:
-      - ../data/am-lab/ipfs:/data
+      - ../data/am-lab/ipfs:/ipfs
+    environment:
+      - NODE_HOST=node-eve
     restart: on-failure
-    command: ./run.sh
     networks: ['am']
 
   api-eve:
-    image: ghcr.io/digicatapult/vitalam-api:v2.0.1
+    image: ghcr.io/digicatapult/vitalam-api:v2.4.0
     container_name: api-eve
-    hostname: api-eve
     ports:
       - 3004:3001
     environment:
       - PORT=3001
-      - API_HOST=${NODE_EVE_HOST}
+      - API_HOST=node-eve
       - API_PORT=9944
       - USER_URI=${API_EVE_WALLET_USER_URI}
-      - IPFS_HOST=${IPFS_EVE_HOST}
+      - IPFS_HOST=ipfs-eve
       - IPFS_PORT=5001
       - LOG_LEVEL=debug
       - AUTH_JWKS_URI=${API_JWKS_URI}
@@ -69,7 +64,6 @@ services:
 
   react-eve:
     container_name: react-eve
-    hostname: react-eve
     build:
       context: '../'
       dockerfile: 'Dockerfile'

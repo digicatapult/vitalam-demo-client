@@ -13,9 +13,19 @@ networks:
 
 services:
   node-charlie:
-    image: ghcr.io/digicatapult/vitalam-node:v2.0.0
+    image: ghcr.io/digicatapult/vitalam-node:v2.5.1
     container_name: node-charlie
-    hostname: node-charlie
+    command: /bin/sh -c "
+      ./vitalam-node
+      --base-path /data/
+      --charlie
+      --node-key ${NODE_CHARLIE_KEY}
+      --bootnodes /dns4/node-alice/tcp/30333/p2p/${NODE_ALICE_PEERID}
+      --bootnodes /dns4/node-bob/tcp/30333/p2p/${NODE_BOB_PEERID}
+      --chain local
+      --unsafe-ws-external
+      --unsafe-rpc-external
+      --rpc-cors all"
     ports:
       - 30335:30333
       - 9946:9944
@@ -23,47 +33,32 @@ services:
     volumes:
       - ../data/lab/node:/data
     restart: on-failure
-    command: ./run.sh
-    environment:
-      - IDENTITY=${IDENTITY_CHARLIE}
-      - RPC=${RPC}
-      - CORS=${CORS}
-      - WS=${WS}
-      - NODEKEY=${NODE_CHARLIE_KEY}
-      - BOOTNODES=/dns4/node-alice/tcp/30333/p2p/${NODE_ALICE_PEERID},/dns4/node-bob/tcp/30333/p2p/${NODE_BOB_PEERID}
     networks: ['chain', 'lab']
 
   ipfs-charlie:
-    image: vitalam-alpine-ipfs:latest
+    image: ghcr.io/digicatapult/vitalam-ipfs:v1.0.0
     container_name: ipfs-charlie
-    hostname: ipfs-charlie
-    build: { 'context': './', 'dockerfile': 'Dockerfile-ipfs', 'args': { 'VER': 'v0.4.23' } }
     ports:
       - 5003:5001
       - 4003:4001
-      - 8082:8080
-    environment:
-      - PEERID=${IPFS_CHARLIE_PEERID}
-      - PRIVKEY=${IPFS_CHARLIE_PRIVKEY}
-      - BOOTNODES=/dns4/ipfs-alice/tcp/4001/ipfs/${IPFS_ALICE_PEERID},/dns4/ipfs-bob/tcp/4001/ipfs/${IPFS_BOB_PEERID}
     volumes:
-      - ../data/lab/ipfs:/data
+      - ../data/lab/ipfs:/ipfs
+    environment:
+      - NODE_HOST=node-charlie
     restart: on-failure
-    command: ./run.sh
     networks: ['ipfs', 'lab']
 
   api-charlie:
-    image: ghcr.io/digicatapult/vitalam-api:v2.0.1
+    image: ghcr.io/digicatapult/vitalam-api:v2.4.0
     container_name: api-charlie
-    hostname: api-charlie
     ports:
       - 3003:3001
     environment:
       - PORT=3001
-      - API_HOST=${NODE_CHARLIE_HOST}
+      - API_HOST=node-charlie
       - API_PORT=9944
       - USER_URI=${API_CHARLIE_WALLET_USER_URI}
-      - IPFS_HOST=${IPFS_CHARLIE_HOST}
+      - IPFS_HOST=ipfs-charlie
       - IPFS_PORT=5001
       - LOG_LEVEL=debug
       - AUTH_JWKS_URI=${API_JWKS_URI}
@@ -75,7 +70,6 @@ services:
 
   react-charlie:
     container_name: react-charlie
-    hostname: react-charlie
     build:
       context: '../'
       dockerfile: 'Dockerfile'

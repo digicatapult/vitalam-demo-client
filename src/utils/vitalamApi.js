@@ -46,18 +46,21 @@ const useApi = () => {
 
     if (!checkJwt(token)) {
       localStorage.clear('token')
-      const response = await wrappedFetch(`http://${API_HOST}:${API_PORT}/auth`, {
-        method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          client_id: process.env.REACT_APP_AUTH_CLIENT_ID,
-          client_secret: process.env.REACT_APP_AUTH_CLIENT_SECRET,
-        }),
-      })
+      const response = await wrappedFetch(
+        `http://${API_HOST}:${API_PORT}/v2/auth`,
+        {
+          method: 'POST',
+          mode: 'cors',
+          cache: 'no-cache',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            client_id: process.env.REACT_APP_AUTH_CLIENT_ID,
+            client_secret: process.env.REACT_APP_AUTH_CLIENT_SECRET,
+          }),
+        }
+      )
 
       token = response.access_token
       localStorage.setItem('token', token)
@@ -66,7 +69,7 @@ const useApi = () => {
   }
 
   const runProcess = async (body) =>
-    wrappedFetch(`http://${API_HOST}:${API_PORT}/run-process`, {
+    wrappedFetch(`http://${API_HOST}:${API_PORT}/v2/run-process`, {
       method: 'POST',
       mode: 'cors',
       body,
@@ -76,7 +79,7 @@ const useApi = () => {
     })
 
   const latestToken = async () => {
-    return await wrappedFetch(`http://${API_HOST}:${API_PORT}/last-token`, {
+    return await wrappedFetch(`http://${API_HOST}:${API_PORT}/v2/last-token`, {
       method: 'GET',
       mode: 'cors',
       cache: 'no-cache',
@@ -86,22 +89,28 @@ const useApi = () => {
     })
   }
   const tokenById = async (id) => {
-    const token = await wrappedFetch(`http://${API_HOST}:${API_PORT}/item/${id}`, {
-      method: 'GET',
-      mode: 'cors',
-      cache: 'no-cache',
-      headers: {
-        Authorization: `Bearer ${await getAuthToken()}`,
-      },
-    })
-    token.metadata = await wrappedFetch(`http://${API_HOST}:${API_PORT}/item/${id}/metadata`, {
-      method: 'GET',
-      mode: 'cors',
-      cache: 'no-cache',
-      headers: {
-        Authorization: `Bearer ${await getAuthToken()}`,
-      },
-    })
+    const token = await wrappedFetch(
+      `http://${API_HOST}:${API_PORT}/v2/item/${id}`,
+      {
+        method: 'GET',
+        mode: 'cors',
+        cache: 'no-cache',
+        headers: {
+          Authorization: `Bearer ${await getAuthToken()}`,
+        },
+      }
+    )
+    token.metadata = await wrappedFetch(
+      `http://${API_HOST}:${API_PORT}/v2/item/${id}/metadata`,
+      {
+        method: 'GET',
+        mode: 'cors',
+        cache: 'no-cache',
+        headers: {
+          Authorization: `Bearer ${await getAuthToken()}`,
+        },
+      }
+    )
     return token
   }
 
