@@ -16,7 +16,9 @@ const findOriginalId = (items, token) => {
     return currentItem.id
   } else {
     // look for a token whose latest version is listed as a parent of `token`
-    const parentItem = items.find(({ latestId }) => token.parents.some((parentId) => parentId === latestId))
+    const parentItem = items.find(({ latestId }) =>
+      token.parents.some((parentId) => parentId === latestId)
+    )
     // if we don't find a parent this is a new item
     return parentItem ? parentItem.id : token.id
   }
@@ -66,8 +68,8 @@ const BlockchainWatcher = ({ children }) => {
                 addOrder({
                   id: token.id,
                   latestId: token.id,
-                  owner: token.owner,
-                  latestOwner: token.owner,
+                  owner: token.roles.Admin,
+                  latestOwner: token.roles.Admin,
                   ...token.metadata,
                 })
               )
@@ -77,7 +79,7 @@ const BlockchainWatcher = ({ children }) => {
                 updateOrder({
                   id: findOriginalId(orders, token),
                   latestId: token.id,
-                  latestOwner: token.owner,
+                  latestOwner: token.roles.Admin,
                   ...token.metadata,
                 })
               )
@@ -87,7 +89,7 @@ const BlockchainWatcher = ({ children }) => {
                 updateOrder({
                   id: findOriginalId(orders, token),
                   latestId: token.id,
-                  latestOwner: token.owner,
+                  latestOwner: token.roles.Admin,
                   ...token.metadata,
                 })
               )
@@ -97,8 +99,11 @@ const BlockchainWatcher = ({ children }) => {
                 upsertPowder({
                   id: findOriginalId(powders, token),
                   latestId: token.id,
-                  owner: findOriginalId(powders, token) === token.id ? token.owner : undefined,
-                  latestOwner: token.owner,
+                  owner:
+                    findOriginalId(powders, token) === token.id
+                      ? token.roles.Admin
+                      : undefined,
+                  latestOwner: token.roles.Admin,
                   ...token.metadata,
                 })
               )
@@ -108,8 +113,8 @@ const BlockchainWatcher = ({ children }) => {
                 addLabTest({
                   id: token.id,
                   latestId: token.id,
-                  owner: token.owner,
-                  latestOwner: token.owner,
+                  owner: token.roles.Admin,
+                  latestOwner: token.roles.Admin,
                   ...token.metadata,
                 })
               )
@@ -119,7 +124,7 @@ const BlockchainWatcher = ({ children }) => {
                 updateLabTest({
                   id: findOriginalId(labTests, token),
                   latestId: token.id,
-                  latestOwner: token.owner,
+                  latestOwner: token.roles.Admin,
                   ...token.metadata,
                 })
               )
@@ -140,7 +145,9 @@ const BlockchainWatcher = ({ children }) => {
         await pollFunc()
       } catch (err) {
         console.error(
-          `Error polling for blockchain state. Error was ${`"${err.message}"` || JSON.stringify(err, null, 2)}`
+          `Error polling for blockchain state. Error was ${
+            `"${err.message}"` || JSON.stringify(err, null, 2)
+          }`
         )
       }
       if (timer !== null) {
