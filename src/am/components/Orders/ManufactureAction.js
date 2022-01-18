@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { CircularProgress, Container, Grid, Typography } from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import makeStyles from '@material-ui/core/styles/makeStyles'
@@ -44,7 +44,7 @@ const ManufactureOrderAction = ({ order }) => {
   const [isAccepting, setIsAccepting] = useState(false)
   const [selectedPowder, setSelectedPowder] = useState('')
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const api = useApi()
 
@@ -119,7 +119,7 @@ const ManufactureOrderAction = ({ order }) => {
     const manufacturingToken = { ...order, type: 'ManufacturingOrder' }
     dispatch(updateOrder(manufacturingToken))
 
-    history.push('/app/orders')
+    navigate('/app/orders')
   }
 
   const onPowderChange = async (event) => {

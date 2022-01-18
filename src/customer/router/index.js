@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Switch, Redirect } from 'react-router-dom'
+import { Route, Routes, Navigate } from 'react-router-dom'
 
 import CustomerPart from '../components/CustomerPart'
 import CustomerParts from '../components/CustomerParts'
@@ -7,12 +7,12 @@ import MyOrders from '../components/MyOrders'
 
 const Routing = () => {
   return (
-    <Switch>
-      <Redirect exact from="/" to="/app/customer-parts" />
-      <Route exact path="/app/my-orders" component={MyOrders} />
-      <Route exact path="/app/customer-part/:partId" component={CustomerPart} />
-      <Route exact path="/app/customer-parts" component={CustomerParts} />
-    </Switch>
+    <Routes>
+      <Route path="/" element={<Navigate to="/app/customer-parts" />} />
+      <Route path="/app/my-orders" element={<MyOrders />} />
+      <Route path="/app/customer-part/:partId" element={<CustomerPart />} />
+      <Route path="/app/customer-parts" element={<CustomerParts />} />
+    </Routes>
   )
 }
 

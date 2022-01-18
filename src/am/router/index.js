@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Switch, Redirect } from 'react-router-dom'
+import { Route, Routes, Navigate } from 'react-router-dom'
 
 import Orders from '../components/Orders'
 import { Powders, PowdersDetails } from '../components/Powders'
@@ -7,15 +7,15 @@ import Tests from '../components/Tests'
 
 const Routing = () => {
   return (
-    <Switch>
-      <Redirect exact from="/" to="/app/orders" />
-      <Route exact path="/app/orders" component={Orders} />
-      <Route exact path="/app/orders/:orderId" component={Orders} />
-      <Route exact path="/app/powders" component={Powders} />
-      <Route exact path="/app/powders/:powderId" component={PowdersDetails} />
-      <Route exact path="/app/tests" component={Tests} />
-      <Route exact path="/app/tests/:testId" component={Tests} />
-    </Switch>
+    <Routes>
+      <Route path="/" element={<Navigate to="/app/orders" />} />
+      <Route path="/app/orders" element={<Orders />} />
+      <Route path="/app/orders/:orderId" element={<Orders />} />
+      <Route path="/app/powders" element={<Powders />} />
+      <Route path="/app/powders/:powderId" element={<PowdersDetails />} />
+      <Route path="/app/tests" element={<Tests />} />
+      <Route path="/app/tests/:testId" element={<Tests />} />
+    </Routes>
   )
 }
 

@@ -13,7 +13,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux'
 import makeStyles from '@material-ui/core/styles/makeStyles'
 
-import { useParams, useHistory } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 
 import BackButton from './BackButton'
 import PowderHeader from './Header'
@@ -81,7 +81,7 @@ const testList = [
 const PowdersDetail = () => {
   const { powderId: idStr } = useParams()
   const id = parseInt(idStr)
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const dispatch = useDispatch()
   const classes = useStyles()
@@ -164,7 +164,7 @@ const PowdersDetail = () => {
     dispatch(addLabTest(labTestToken))
     dispatch(upsertPowder(powderToken))
 
-    history.push('/app/powders')
+    navigate('/app/powders')
   }
 
   return (

@@ -3,7 +3,7 @@ import { Paper, CardContent, CardMedia, Grid, Typography, CircularProgress, Box,
 import Button from '@material-ui/core/Button'
 import makeStyles from '@material-ui/core/styles/makeStyles'
 import BackButton from './BackButton'
-import { useHistory, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { addOrder } from '../../features/ordersSlice'
@@ -52,7 +52,7 @@ const DetailRow = ({ title, value }) => {
 const CustomerPart = () => {
   const { partId: id } = useParams()
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
   const [isOrdering, setIsOrdering] = useState(false)
 
   const selectedCustomerPart = useSelector((state) => state.customerParts.find(({ partId }) => partId === id))
@@ -100,7 +100,7 @@ const CustomerPart = () => {
 
     dispatch(addOrder(token))
 
-    history.push('/app/my-orders')
+    navigate('/app/my-orders')
   }
 
   return (

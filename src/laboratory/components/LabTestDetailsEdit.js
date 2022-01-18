@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Button, CircularProgress, Grid, Paper, TextareaAutosize, Typography } from '@material-ui/core'
 import makeStyles from '@material-ui/core/styles/makeStyles'
 import { useDropzone } from 'react-dropzone'
@@ -58,7 +58,7 @@ const LabTestDetailsEdit = ({ id }) => {
 
   const api = useApi()
   const dispatch = useDispatch()
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (acceptedFiles) => {
@@ -119,7 +119,7 @@ const LabTestDetailsEdit = ({ id }) => {
     const response = await api.runProcess(formData)
     const token = { id: id, latestId: response[0], ...fileData }
     dispatch(updateLabTest(token))
-    history.push('/app/tested/' + id)
+    navigate('/app/tested/' + id)
   }
 
   const hasFile = fileObject !== null
