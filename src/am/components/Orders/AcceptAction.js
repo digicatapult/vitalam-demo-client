@@ -73,7 +73,11 @@ const AcceptOrderAction = ({ order }) => {
         className={classes.acceptButton}
         onClick={isAccepting ? null : onChange}
       >
-        {isAccepting ? <CircularProgress color="secondary" size="30px" /> : 'Accept'}
+        {isAccepting ? (
+          <CircularProgress color="secondary" size="30px" />
+        ) : (
+          'Accept'
+        )}
       </Button>
     </Container>
   )

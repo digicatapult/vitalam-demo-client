@@ -98,7 +98,14 @@ const PowdersDetail = () => {
   const [isFetching, setIsFetching] = useState(false)
   const [labId, setLabId] = useState(null)
 
-  const { powderReference, material, alloy, quantityKg, particleSizeUm, location } = powder
+  const {
+    powderReference,
+    material,
+    alloy,
+    quantityKg,
+    particleSizeUm,
+    location,
+  } = powder
 
   const createFormData = (inputs, outputs) => {
     const formData = new FormData()
@@ -172,7 +179,11 @@ const PowdersDetail = () => {
       <Header title="Powder Inventory" />
 
       <Box>
-        <BackButton buttonClass={classes.backButton} backToLocation="/app/powders" value="< Back" />
+        <BackButton
+          buttonClass={classes.backButton}
+          backToLocation="/app/powders"
+          value="< Back"
+        />
 
         <Paper elevation={0} className={classes.detailContainer}>
           <Box className={classes.detailHeaderContainer}>
@@ -204,10 +215,14 @@ const PowdersDetail = () => {
           <TestDetails powder={powder} tests={testList} />
           {labTest === null ? (
             <Box className={classes.actionsContainer}>
-              <Typography>Select a company to send the samples for testing:</Typography>
+              <Typography>
+                Select a company to send the samples for testing:
+              </Typography>
               <Box className={classes.formControls}>
                 <FormControl variant="outlined" className={classes.formSelect}>
-                  <InputLabel htmlFor="testing-company-name-select">Testing company name</InputLabel>
+                  <InputLabel htmlFor="testing-company-name-select">
+                    Testing company name
+                  </InputLabel>
                   <Select
                     native
                     onChange={(event) => {
@@ -231,7 +246,11 @@ const PowdersDetail = () => {
                   disabled={!labId}
                   onClick={isFetching ? null : onChange}
                 >
-                  {isFetching ? <CircularProgress color="secondary" size="30px" /> : 'SEND FOR TESTING'}
+                  {isFetching ? (
+                    <CircularProgress color="secondary" size="30px" />
+                  ) : (
+                    'SEND FOR TESTING'
+                  )}
                 </Button>
               </Box>
             </Box>

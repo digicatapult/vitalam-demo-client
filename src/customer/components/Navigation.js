@@ -88,9 +88,14 @@ const Navigation = () => {
       >
         <Typography variant="subtitle2">My orders</Typography>
       </NavLink>
-      <NavLink className={`${classes.accountNameWrapper} ${classes.navHover}`} to="#">
+      <NavLink
+        className={`${classes.accountNameWrapper} ${classes.navHover}`}
+        to="#"
+      >
         <Typography variant="subtitle2">{name}</Typography>
-        <Typography className={classes.avatar}>{name.substring(0, 1)}</Typography>
+        <Typography className={classes.avatar}>
+          {name.substring(0, 1)}
+        </Typography>
       </NavLink>
       <Box className={classes.navButton}>
         <NetworkStatusIndicator />

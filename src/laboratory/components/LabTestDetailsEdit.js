@@ -1,7 +1,14 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { Button, CircularProgress, Grid, Paper, TextareaAutosize, Typography } from '@material-ui/core'
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  Paper,
+  TextareaAutosize,
+  Typography,
+} from '@material-ui/core'
 import makeStyles from '@material-ui/core/styles/makeStyles'
 import { useDropzone } from 'react-dropzone'
 
@@ -38,7 +45,9 @@ const u8Array2base64URI = (obj) => {
   const CHUNK_SZ = 0x8000
   const parsedChunks = []
   for (let i = 0; i < u8.length; i += CHUNK_SZ) {
-    parsedChunks.push(String.fromCharCode.apply(null, u8.subarray(i, i + CHUNK_SZ)))
+    parsedChunks.push(
+      String.fromCharCode.apply(null, u8.subarray(i, i + CHUNK_SZ))
+    )
   }
   const base64 = btoa(parsedChunks.join(''))
 
@@ -137,15 +146,27 @@ const LabTestDetailsEdit = ({ id }) => {
           <Grid xs={12} container className={classes.border}>
             {!hasFile ? (
               <Grid xs={12} className={classes.dndbg}>
-                <Grid container direction="column" alignItems="center" {...getRootProps()}>
+                <Grid
+                  container
+                  direction="column"
+                  alignItems="center"
+                  {...getRootProps()}
+                >
                   <input {...getInputProps()} />
                   <Grid variant="contained" item className={classes.dnd}>
-                    <img src={images.dragAndDropBg} className={classes.img} alt />
+                    <img
+                      src={images.dragAndDropBg}
+                      className={classes.img}
+                      alt
+                    />
                   </Grid>
                   <Grid variant="contained" item className={classes.dnd}>
                     <Typography variant="subtitle2" className={classes.dndText}>
                       {'Drag & drop a file here or \xa0'}
-                      <Typography variant="subtitle2" className={classes.dndLink}>
+                      <Typography
+                        variant="subtitle2"
+                        className={classes.dndLink}
+                      >
                         choose files
                       </Typography>
                     </Typography>
@@ -157,18 +178,28 @@ const LabTestDetailsEdit = ({ id }) => {
                 <Typography variant="subtitle2" className={classes.heading}>
                   Attached documents
                 </Typography>
-                <Attachment name={fileObject.fileName} downloadData={u8Array2base64URI(fileObject)} />
+                <Attachment
+                  name={fileObject.fileName}
+                  downloadData={u8Array2base64URI(fileObject)}
+                />
               </>
             )}
           </Grid>
 
           <Grid xs={12} container className={classes.border}>
-            <LabTestRow title={'State the result of the tests and the reasons for this result:'} value="" />
+            <LabTestRow
+              title={
+                'State the result of the tests and the reasons for this result:'
+              }
+              value=""
+            />
 
             <Grid xs={6} container direction="column" alignItems="center">
               <Button
                 size="small"
-                variant={labTestPassOrFail === 'passed' ? 'contained' : 'outlined'}
+                variant={
+                  labTestPassOrFail === 'passed' ? 'contained' : 'outlined'
+                }
                 color="primary"
                 className={classes.button}
                 value="passed"
@@ -180,7 +211,9 @@ const LabTestDetailsEdit = ({ id }) => {
             <Grid xs={6} container direction="column" alignItems="center">
               <Button
                 size="small"
-                variant={labTestPassOrFail === 'failed' ? 'contained' : 'outlined'}
+                variant={
+                  labTestPassOrFail === 'failed' ? 'contained' : 'outlined'
+                }
                 color="default"
                 className={classes.button}
                 value="failed"
@@ -218,7 +251,11 @@ const LabTestDetailsEdit = ({ id }) => {
               className={classes.button}
               onClick={onSubmit}
             >
-              {isSubmitting ? <CircularProgress color="secondary" size="30px" /> : 'Submit'}
+              {isSubmitting ? (
+                <CircularProgress color="secondary" size="30px" />
+              ) : (
+                'Submit'
+              )}
             </Button>
           </Grid>
         </Paper>

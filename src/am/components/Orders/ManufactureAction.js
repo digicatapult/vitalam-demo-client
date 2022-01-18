@@ -1,6 +1,11 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CircularProgress, Container, Grid, Typography } from '@material-ui/core'
+import {
+  CircularProgress,
+  Container,
+  Grid,
+  Typography,
+} from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import makeStyles from '@material-ui/core/styles/makeStyles'
 import { useDispatch, useSelector } from 'react-redux'
@@ -136,7 +141,11 @@ const ManufactureOrderAction = ({ order }) => {
             </Typography>
           </Grid>
           <Grid item>
-            <Select name="powder" className={classes.selectInput} onChange={onPowderChange}>
+            <Select
+              name="powder"
+              className={classes.selectInput}
+              onChange={onPowderChange}
+            >
               {powders.map((item) => (
                 <MenuItem key={item.id} value={item.id}>
                   {item.powderReference} ({item.material})
@@ -155,7 +164,11 @@ const ManufactureOrderAction = ({ order }) => {
           disabled={selectedPowder ? false : true}
           onClick={onButtonChange}
         >
-          {isAccepting ? <CircularProgress color="secondary" size="30px" /> : 'Manufacture Part'}
+          {isAccepting ? (
+            <CircularProgress color="secondary" size="30px" />
+          ) : (
+            'Manufacture Part'
+          )}
         </Button>
       </Container>
     </Box>

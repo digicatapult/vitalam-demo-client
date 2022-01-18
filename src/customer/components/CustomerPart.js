@@ -1,5 +1,14 @@
 import React, { useState } from 'react'
-import { Paper, CardContent, CardMedia, Grid, Typography, CircularProgress, Box, Container } from '@material-ui/core'
+import {
+  Paper,
+  CardContent,
+  CardMedia,
+  Grid,
+  Typography,
+  CircularProgress,
+  Box,
+  Container,
+} from '@material-ui/core'
 import Button from '@material-ui/core/Button'
 import makeStyles from '@material-ui/core/styles/makeStyles'
 import BackButton from './BackButton'
@@ -42,7 +51,11 @@ const DetailRow = ({ title, value }) => {
         {title}:
       </Typography>
       &nbsp;
-      <Typography className={classes.inline} variant="body2" color="textSecondary">
+      <Typography
+        className={classes.inline}
+        variant="body2"
+        color="textSecondary"
+      >
         {value}
       </Typography>
     </Box>
@@ -55,7 +68,9 @@ const CustomerPart = () => {
   const navigate = useNavigate()
   const [isOrdering, setIsOrdering] = useState(false)
 
-  const selectedCustomerPart = useSelector((state) => state.customerParts.find(({ partId }) => partId === id))
+  const selectedCustomerPart = useSelector((state) =>
+    state.customerParts.find(({ partId }) => partId === id)
+  )
   const api = useApi()
 
   const { image, name, material, alloy } = selectedCustomerPart
@@ -106,14 +121,32 @@ const CustomerPart = () => {
   return (
     // <Grid container direction="column" spacing={2}>
     <Container>
-      <BackButton buttonClass={classes.backButton} backToLocation="/app/customer-parts" value="< Back" />
+      <BackButton
+        buttonClass={classes.backButton}
+        backToLocation="/app/customer-parts"
+        value="< Back"
+      />
 
       <Paper elevation={0} className={classes.card}>
         <Grid container>
           <Grid item xs={3}>
-            <CardMedia component="img" alt={name} width="450" height="322" image={image} title={name} />
+            <CardMedia
+              component="img"
+              alt={name}
+              width="450"
+              height="322"
+              image={image}
+              title={name}
+            />
           </Grid>
-          <Grid container item xs={4} direction="column" justify="space-between" className={classes.content}>
+          <Grid
+            container
+            item
+            xs={4}
+            direction="column"
+            justify="space-between"
+            className={classes.content}
+          >
             <CardContent>
               <Typography gutterBottom variant="h6">
                 {name}
@@ -125,7 +158,13 @@ const CustomerPart = () => {
               <DetailRow title="Alloy" value={alloy}></DetailRow>
             </CardContent>
           </Grid>
-          <Grid container item xs={3} direction="column" justify="space-between">
+          <Grid
+            container
+            item
+            xs={3}
+            direction="column"
+            justify="space-between"
+          >
             <Typography variant="h6">£1,200</Typography>
             <Box>
               <Typography variant="h6">Shipping Address:</Typography>
@@ -141,7 +180,11 @@ const CustomerPart = () => {
               className={classes.orderButton}
               onClick={isOrdering ? null : onChange}
             >
-              {isOrdering ? <CircularProgress color="secondary" size="30px" /> : 'Order'}
+              {isOrdering ? (
+                <CircularProgress color="secondary" size="30px" />
+              ) : (
+                'Order'
+              )}
             </Button>
           </Grid>
         </Grid>
