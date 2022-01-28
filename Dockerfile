@@ -1,5 +1,7 @@
-ARG NODE_VERSION=16.13.2-alpine
+ARG NODE_VERSION=16-alpine
 FROM node:$NODE_VERSION AS build
+
+RUN npm -g install npm@8.x.x
 
 ARG REACT_APP_VITALAM_DEMO_PERSONA
 ARG REACT_APP_API_HOST
@@ -21,6 +23,9 @@ RUN npm run build
 ##################################################################################################
 
 FROM node:$NODE_VERSION AS runtime
+
+RUN npm -g install npm@8.x.x
+
 WORKDIR /vitalam-demo-client
 ENV PORT 3000
 
